@@ -1,5 +1,6 @@
-package ro.mihai.retrofitcrud;
+package ro.mihai.retrofitcrud.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -7,17 +8,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import ro.mihai.retrofitcrud.models.DefaultResponse;
+import ro.mihai.retrofitcrud.R;
+import ro.mihai.retrofitcrud.api.RetrofitClient;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextMail, editTextPassword, editTextName, editTextSchool;
@@ -111,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 userSignup();
                 break;
             case R.id.textViewLogin:
+                startActivity(new Intent(this, LoginActivity.class));
                 break;
         }
     }

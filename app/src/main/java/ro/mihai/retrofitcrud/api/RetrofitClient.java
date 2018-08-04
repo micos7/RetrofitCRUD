@@ -1,4 +1,4 @@
-package ro.mihai.retrofitcrud;
+package ro.mihai.retrofitcrud.api;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

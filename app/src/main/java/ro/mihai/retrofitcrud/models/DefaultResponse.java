@@ -1,4 +1,4 @@
-package ro.mihai.retrofitcrud;
+package ro.mihai.retrofitcrud.models;
 
 import com.google.gson.annotations.SerializedName;
 

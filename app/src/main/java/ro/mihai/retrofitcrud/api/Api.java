@@ -1,10 +1,11 @@
-package ro.mihai.retrofitcrud;
+package ro.mihai.retrofitcrud.api;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
+import ro.mihai.retrofitcrud.models.DefaultResponse;
+import ro.mihai.retrofitcrud.models.LoginResponse;
 
 public interface Api {
     @FormUrlEncoded
@@ -15,4 +16,12 @@ public interface Api {
             @Field("name") String name,
             @Field("school") String school
     );
+
+    @FormUrlEncoded
+    @POST("userlogin")
+    Call<LoginResponse> userLogin(
+            @Field("email") String email,
+            @Field("password") String password
+    );
+
 }
