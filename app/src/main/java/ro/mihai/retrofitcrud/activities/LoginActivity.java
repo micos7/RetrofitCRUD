@@ -14,6 +14,7 @@ import retrofit2.Response;
 import ro.mihai.retrofitcrud.R;
 import ro.mihai.retrofitcrud.api.RetrofitClient;
 import ro.mihai.retrofitcrud.models.LoginResponse;
+import ro.mihai.retrofitcrud.storage.SharedPrefManager;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextEmail;
@@ -29,6 +30,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         findViewById(R.id.textViewLogin).setOnClickListener(this);
         findViewById(R.id.textViewRegister).setOnClickListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(SharedPrefManager.getInstance(this).isLoggedIn()){
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
     }
 
     private void userLogin(){
@@ -60,7 +72,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 LoginResponse loginResponse = response.body();
 
                 if(!loginResponse.isError()){
-                    Toast.makeText(LoginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    SharedPrefManager.getInstance(LoginActivity.this)
+                            .saveUser(loginResponse.getUser());
+
+                    Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 }else {
                     Toast.makeText(LoginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
                 }

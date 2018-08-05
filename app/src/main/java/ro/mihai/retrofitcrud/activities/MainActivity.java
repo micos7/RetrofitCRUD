@@ -14,6 +14,7 @@ import retrofit2.Response;
 import ro.mihai.retrofitcrud.models.DefaultResponse;
 import ro.mihai.retrofitcrud.R;
 import ro.mihai.retrofitcrud.api.RetrofitClient;
+import ro.mihai.retrofitcrud.storage.SharedPrefManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText editTextMail, editTextPassword, editTextName, editTextSchool;
@@ -30,6 +31,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.buttonSignUp).setOnClickListener(this);
         findViewById(R.id.textViewLogin).setOnClickListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(SharedPrefManager.getInstance(this).isLoggedIn()){
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
     }
 
     private void userSignup(){
