@@ -11,17 +11,15 @@ import ro.mihai.retrofitcrud.storage.SharedPrefManager;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextView textView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        textView = findViewById(R.id.textView);
+        
 
-        User user = SharedPrefManager.getInstance(this).getUser();
-        textView.setText("Welcome user "+ user.getName());
     }
 
     @Override
