@@ -1,5 +1,6 @@
 package ro.mihai.retrofitcrud.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +16,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ro.mihai.retrofitcrud.R;
 import retrofit2.Call;
+import ro.mihai.retrofitcrud.activities.LoginActivity;
+import ro.mihai.retrofitcrud.activities.ProfileActivity;
 import ro.mihai.retrofitcrud.api.RetrofitClient;
+import ro.mihai.retrofitcrud.models.DefaultResponse;
 import ro.mihai.retrofitcrud.models.LoginResponse;
 import ro.mihai.retrofitcrud.models.User;
 import ro.mihai.retrofitcrud.storage.SharedPrefManager;
@@ -101,6 +105,48 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    private void updatePassword(){
+        String currentpassword = editTextcurrentPassword.getText().toString().trim();
+        String newpassword = editTextNewPassword.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim();
+
+        if(currentpassword.isEmpty()){
+            editTextcurrentPassword.setError("Password required!");
+            editTextcurrentPassword.requestFocus();
+            return;
+        }
+
+        if(newpassword.isEmpty()){
+            editTextNewPassword.setError("New Password required!");
+            editTextNewPassword.requestFocus();
+            return;
+        }
+
+
+        User user = SharedPrefManager.getInstance(getActivity()).getUser();
+        Call<DefaultResponse> call = RetrofitClient.getInstance().getApi()
+                .updatePassword(currentpassword, newpassword, user.getEmail());
+
+        call.enqueue(new Callback<DefaultResponse>() {
+            @Override
+            public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
+                Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<DefaultResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void logout(){
+        SharedPrefManager.getInstance(getActivity()).clear();
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -108,8 +154,10 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 updateProfile();
                 break;
             case R.id.buttonChangePassword:
+                updatePassword();
                 break;
             case R.id.buttonLogout:
+                logout();
                 break;
             case R.id.buttonDelete:
                 break;
