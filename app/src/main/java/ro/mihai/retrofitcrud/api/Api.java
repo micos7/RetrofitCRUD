@@ -1,6 +1,7 @@
 package ro.mihai.retrofitcrud.api;
 
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -47,4 +48,8 @@ public interface Api {
             @Field("newpassword") String newpassword,
             @Field("email") String email
     );
+
+    @DELETE("deleteuser/{id}")
+    Call<DefaultResponse> deleteUser(@Path("id") int id);
+
 }
