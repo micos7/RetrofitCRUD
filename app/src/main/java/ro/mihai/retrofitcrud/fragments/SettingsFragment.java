@@ -1,5 +1,7 @@
 package ro.mihai.retrofitcrud.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +19,7 @@ import retrofit2.Response;
 import ro.mihai.retrofitcrud.R;
 import retrofit2.Call;
 import ro.mihai.retrofitcrud.activities.LoginActivity;
+import ro.mihai.retrofitcrud.activities.MainActivity;
 import ro.mihai.retrofitcrud.activities.ProfileActivity;
 import ro.mihai.retrofitcrud.api.RetrofitClient;
 import ro.mihai.retrofitcrud.models.DefaultResponse;
@@ -85,7 +88,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
         Call<LoginResponse> call = RetrofitClient.getInstance()
                 .getApi().updateUser(
-                        user.getId(),email,name,school
+                        user.getId(), email, name, school
                 );
 
         call.enqueue(new Callback<LoginResponse>() {
@@ -93,7 +96,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 
-                if(!response.body().isError()){
+                if (!response.body().isError()) {
                     SharedPrefManager.getInstance(getActivity()).saveUser(response.body().getUser());
                 }
             }
@@ -105,18 +108,18 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void updatePassword(){
+    private void updatePassword() {
         String currentpassword = editTextcurrentPassword.getText().toString().trim();
         String newpassword = editTextNewPassword.getText().toString().trim();
         String email = editTextEmail.getText().toString().trim();
 
-        if(currentpassword.isEmpty()){
+        if (currentpassword.isEmpty()) {
             editTextcurrentPassword.setError("Password required!");
             editTextcurrentPassword.requestFocus();
             return;
         }
 
-        if(newpassword.isEmpty()){
+        if (newpassword.isEmpty()) {
             editTextNewPassword.setError("New Password required!");
             editTextNewPassword.requestFocus();
             return;
@@ -140,11 +143,53 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void logout(){
+    private void logout() {
         SharedPrefManager.getInstance(getActivity()).clear();
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    private void deleteUser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Are you sure?");
+        builder.setMessage("This action is irreversible!");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                User user = SharedPrefManager.getInstance(getActivity()).getUser();
+                Call<DefaultResponse> call = RetrofitClient.getInstance().getApi()
+                        .deleteUser(user.getId());
+
+                call.enqueue(new Callback<DefaultResponse>() {
+                    @Override
+                    public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
+                        if(!response.body().isErr()){
+                            SharedPrefManager.getInstance(getActivity()).clear();
+                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        }
+
+                        Toast.makeText(getActivity(), response.body().getMsg(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<DefaultResponse> call, Throwable t) {
+
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog ad = builder.create();
+        ad.show();
     }
 
     @Override
@@ -160,6 +205,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 logout();
                 break;
             case R.id.buttonDelete:
+                deleteUser();
                 break;
         }
     }
